@@ -30,7 +30,7 @@ linker_script: zippler.sym gen_linker_script.sh
 	./gen_linker_script.sh linker_script
 	
 zippler.sym: $(ZIPPLER_FILES)
-	valac $(ZIPPLER_FILES) $(MINIZIP_C) -X -Iminizip --library=zippler -X -fPIC --pkg minizip --vapidir=vapi --symbols=zippler.sym -X -w -X -O2 -c
+	valac $(ZIPPLER_FILES) $(MINIZIP_C) -X -Iminizip --library=zippler -X -fPIC --pkg minizip --vapidir=vapi --symbols=zippler.sym --vapi=zippler-1.0.vapi -H zippler.h -X -w -X -O2 -c
 	
 libzippler.a: $(ZIPPLER_FILES) $(MINIZIP_C) $(MINIZIP_H) vapi/minizip.vapi zippler.sym
 	ar rcs libzippler.a $(OBJECTS)

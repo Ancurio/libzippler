@@ -1,0 +1,25 @@
+What is Zippler?
+----------------
+
+Zippler is a GObject based convenience
+library written in Vala for browsing and
+accessing the contents of zip files.
+Built on top of the popular minizip
+code which comes bundled with zlib,
+it provides a neat interface which
+presents a zipfile as a tree of folders
+and files, much like a filesystem.
+
+Example: list all files/folders in
+the root directory of a zip-file:
+
+	var zip = new Zippler.File();
+	zip.load_file("myZipFile.zip");
+	
+	foreach(Zippler.Entry e in zip.root_entry.children)
+		stdout.printf("%s\n", e.name);
+				
+
+The example file ZipplerView showcases
+a simple GTK-based zip file browser
+in about 140 lines.

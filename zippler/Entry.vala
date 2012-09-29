@@ -227,6 +227,22 @@ public class Zippler.Entry
 		return children.copy();
 	}
 
+	public void foreach_child(Func<Entry> func)
+	{
+		foreach (Entry c in children)
+		{
+			func(c);
+			if (c.entry_type == EntryType.DIRECTORY)
+				c.foreach_child(func);
+		}
+	}
+
+	public void foreach_child_flat(Func<Entry> func)
+	{
+		foreach (Entry c in children)
+			func(c);
+	}
+
 	public uint8[]? get_contents()
 	{
 		bool terminated = false;
@@ -278,11 +294,6 @@ public class Zippler.Entry
 		cached_contents_user = data;
 		contents_modified = true;
 		date_time = new GLib.DateTime.now_local();
-	}
-
-	internal static int compare_func(Entry e1, Entry e2)
-	{
-		return GLib.strcmp(e1.path, e2.path);
 	}
 }
 

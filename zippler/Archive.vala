@@ -48,8 +48,6 @@ public class Zippler.Archive : Object
 
 	private Zippler.MemContext mem_context;
 
-	private List<Entry> flat_list;
-
 	private HashTable<string, Entry> entry_hash;
 
 
@@ -214,8 +212,10 @@ public class Zippler.Archive : Object
 		}
 
 		if (cache_type == CacheType.FULL)
-			foreach (Entry e in flat_list)
+			root_entry.foreach_child( (e) =>
+			{
 				e.cache_contents();
+			});
 
 		this.loaded = true;
 	}
@@ -226,7 +226,6 @@ public class Zippler.Archive : Object
 		entry.parent = parent;
 		parent.append_child(entry);
 
-		flat_list.insert_sorted(entry, Entry.compare_func);
 		entry_hash.insert(path, entry);
 	}
 
@@ -278,7 +277,6 @@ public class Zippler.Archive : Object
 				super_parent.append_child(parent);
 				parent.parent = super_parent;
 
-				flat_list.insert_sorted(parent, Entry.compare_func);
 				entry_hash.insert(_parent_path, parent);
 			}
 		}
@@ -346,7 +344,7 @@ public class Zippler.Archive : Object
 
 	private void write(Zip.File zfile)
 	{
-		foreach(Entry e in flat_list)
+		root_entry.foreach_child((e) =>
 		{
 			var finfo = Zip.FileInfo();
 			finfo.dos_date    = 0;
@@ -387,7 +385,7 @@ public class Zippler.Archive : Object
 
 				zfile.close_file_raw(e.uncompressed_size, e.crc);
 			}
-		}
+		});
 
 		zfile.close(global_comment);
 	}
@@ -407,9 +405,6 @@ public class Zippler.Archive : Object
 
 	public unowned Entry? add_entry_path(string path)
 	{
-		// This seems to have a lot of common with the code
-		// in Archive::load()...
-
 		// Root path not allowed
 		if (path == "/")
 			return null;
@@ -451,7 +446,6 @@ public class Zippler.Archive : Object
 		if (e == root_entry)
 			return false;
 
-		flat_list.remove(e);
 		entry_hash.remove(e.path);
 		e.parent.remove_child(e);
 
@@ -467,9 +461,15 @@ public class Zippler.Archive : Object
 		return true;
 	}
 
-	public List<weak Entry> get_flat_list()
+	public List<unowned Entry> get_flat_list()
 	{
-		return flat_list.copy();
+		var list = new List<unowned Entry>();
+		root_entry.foreach_child((e) =>
+		{
+			list.append(e);
+		});
+
+		return (owned) list;
 	}
 
 	public unowned Entry? lookup_entry(string path)

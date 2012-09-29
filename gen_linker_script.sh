@@ -1,13 +1,13 @@
-echo "libzippler.so" > $1
-echo "{" >> $1
-echo "global:" >> $1
+echo "libzippler.so" > $2
+echo "{" >> $2
+echo "global:" >> $2
 
 semic=';'
 
-cat zippler.sym | while read line
+cat $1 | while read line
 do
-	echo $line$semic >> $1
+	echo $line$semic >> $2
 done
 
-echo "local: *;" >> $1
-echo "};" >> $1
+echo "local: *;" >> $2
+echo "};" >> $2

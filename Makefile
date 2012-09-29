@@ -24,7 +24,7 @@ OBJECTS = Archive.vala.o \
 all: libzippler.so libzippler.a
 	
 libzippler.so: $(ZIPPLER_FILES) $(MINIZIP_C) $(MINIZIP_H) vapi/minizip.vapi linker_script
-	ld -shared -s -o libzippler.so `pkg-config --libs-only-L --libs-only-l glib-2.0 gobject-2.0 zlib` --version-script=linker_script -soname=zippler $(OBJECTS)
+	ld -shared -s -o libzippler.so `pkg-config --libs-only-L --libs-only-l glib-2.0 gobject-2.0 zlib` --version-script=linker_script -soname=libzippler.so $(OBJECTS)
 	
 linker_script: zippler.sym gen_linker_script.sh
 	./gen_linker_script.sh linker_script
@@ -36,7 +36,7 @@ libzippler.a: $(ZIPPLER_FILES) $(MINIZIP_C) $(MINIZIP_H) vapi/minizip.vapi zippl
 	ar rcs libzippler.a $(OBJECTS)
 	
 ZipplerView: examples/ZipplerView.vala libzippler.so
-	valac examples/ZipplerView.vala --pkg zippler-1.0 --pkg gtk+-3.0 --vapidir=vapi -X -I. -X -L. -X -lzippler -X -w
+	valac examples/ZipplerView.vala --pkg zippler-1.0 --pkg gtk+-3.0 --vapidir=. -X -I. -X -L. -X -lzippler -X -w
 	
 clean:
 	rm -rf $(OBJECTS) libzippler.so libzippler.a zippler-1.0.gir zippler-1.0.vapi zippler.h zippler.sym

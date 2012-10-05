@@ -95,39 +95,36 @@ class Zippler.MemContext
 		this.memory = memory;
 
 		vector = FileFuncVector();
-		vector.open       = open;
-		vector.read       = read;
-		vector.write      = write;
-		vector.close      = close;
-		vector.tell       = tell;
-		vector.seek       = seek;
-		vector.test_error = test_error;
+		vector.open       = MemContext.open;
+		vector.read       = MemContext.read;
+		vector.write      = MemContext.write;
+		vector.close      = MemContext.close;
+		vector.tell       = MemContext.tell;
+		vector.seek       = MemContext.seek;
+		vector.test_error = MemContext.test_error;
 		vector.user_data  = this;
 	}
 
-	public static void* open(void* _self, string filename, IOApi.Mode mode)
+	public void* open(string filename, IOApi.Mode mode)
 	{
-		var self = _self as MemContext;
-		self.mode = mode;
-		self.opened = true;
+		this.mode = mode;
+		this.opened = true;
 
 //		stdout.printf("Call: OPEN. filename: %s, mode: %d\n", filename, mode);
 //		stdout.printf("--> Return: %p\n", _self);
 
-		return _self;
+		return this;
 	}
 
-	public static ulong read(void* _self, void* stream, uint8* buffer, ulong size)
+	public ulong read(void* stream, uint8* buffer, ulong size)
 	{
-		var self = _self as MemContext;
-
 		long i;
 		for (i = 0; i < size; i++)
 		{
-			if (self.position > self.memory.size)
+			if (position > memory.size)
 				break;
 
-			buffer[i] = self.memory.data[self.position++];
+			buffer[i] = memory.data[position++];
 		}
 
 //		stdout.printf("--> Return: %lu\n", i);
@@ -137,20 +134,18 @@ class Zippler.MemContext
 		return i;
 	}
 
-	public static ulong write(void* _self, void* stream, uint8* buffer, ulong size)
+	public ulong write(void* stream, uint8* buffer, ulong size)
 	{
-		var self = _self as MemContext;
-
 		long i;
 		for (i = 0; i < size; i++)
 		{
-			if (self.position > self.memory.data.length)
-				self.memory.expand();
+			if (position > memory.data.length)
+				memory.expand();
 
-			if (self.position > self.memory.size)
-				self.memory.size = self.position;
+			if (position > memory.size)
+				memory.size = position;
 
-			self.memory.data[self.position++] = buffer[i];
+			memory.data[position++] = buffer[i];
 		}
 
 //		stdout.printf("Call: WRITE. stream: %p, buffer: %p, size %lu\n",
@@ -159,11 +154,9 @@ class Zippler.MemContext
 		return i;
 	}
 
-	public static bool close(void* _self, void* stream)
+	public bool close(void* stream)
 	{
-		var self = _self as MemContext;
-
-		self.opened = false;
+		opened = false;
 
 //		stdout.printf("Call: CLOSE. stream: %p\n", stream);
 //		stdout.printf("--> Return: %s\n", "false");
@@ -171,7 +164,7 @@ class Zippler.MemContext
 		return false;
 	}
 
-	public static bool test_error(void* _self, void* stream)
+	public bool test_error(void* stream)
 	{
 		// Not sure what to do with this yet
 
@@ -181,22 +174,17 @@ class Zippler.MemContext
 		return false;
 	}
 
-	public static long tell(void* _self, void* stream)
+	public long tell(void* stream)
 	{
-		var self = _self as MemContext;
-
 //		stdout.printf("Call: TELL. stream: %p\n", stream);
-//		stdout.printf("--> Return: %li\n", self.position);
+//		stdout.printf("--> Return: %li\n", position);
 
-		return self.position;
+		return position;
 	}
 
-	public static long seek(void* _self, void* stream, ulong offset, IOApi.SeekType type)
+	public long seek(void* stream, ulong offset, IOApi.SeekType type)
 	{
-		var self = _self as MemContext;
-
-
-		long seek_to = self.position;
+		long seek_to = position;
 		switch (type)
 		{
 		case IOApi.SeekType.SET :
@@ -204,7 +192,7 @@ class Zippler.MemContext
 			break;
 
 		case IOApi.SeekType.END :
-			seek_to = (long) self.memory.size;
+			seek_to = (long) memory.size;
 			break;
 
 		case IOApi.SeekType.CUR :
@@ -213,14 +201,14 @@ class Zippler.MemContext
 
 		seek_to += (long) offset;
 
-		if (seek_to > self.memory.size+1)
+		if (seek_to > memory.size+1)
 		{
-//			stdout.printf("SEEK TOO FAR: seek_to: %li, memory.size: %lu\n", seek_to, self.memory.size);
+//			stdout.printf("SEEK TOO FAR: seek_to: %li, size: %lu\n", seek_to, memory.size);
 //			stdout.printf("--> Return: %li\n", -1);
 			return -1;
 		}
 
-		self.position = seek_to;
+		position = seek_to;
 
 //		stdout.printf("Call: SEEK. stream: %p, offset: %lu, mode: %d\n",
 //		              stream, offset, type);

@@ -23,14 +23,14 @@ OBJECTS = Archive.vala.o \
 
 all: libzippler.so libzippler.a
 	
-libzippler.so: $(ZIPPLER_FILES) $(MINIZIP_C) $(MINIZIP_H) vapi/minizip.vapi linker_script
+libzippler.so: linker_script
 	ld -shared -s -o libzippler.so `pkg-config --libs-only-L --libs-only-l glib-2.0 gobject-2.0 zlib` --version-script=linker_script -soname=libzippler.so $(OBJECTS)
 	
 linker_script: zippler.sym gen_linker_script.sh
-	./gen_linker_script.sh zippler.sym linker_script
+	./gen_linker_script.sh libzippler.so zippler.sym linker_script
 	
-zippler.sym: $(ZIPPLER_FILES)
-	valac $(ZIPPLER_FILES) $(MINIZIP_C) -X -Iminizip --library=zippler -X -fPIC --pkg minizip --vapidir=vapi --symbols=zippler.sym --vapi=zippler-1.0.vapi -H zippler.h -X -w -X -O2 -c
+zippler.sym: $(ZIPPLER_FILES) $(MINIZIP_C) $(MINIZIP_H) vapi/minizip.vapi
+	valac $(ZIPPLER_FILES) $(MINIZIP_C) -X -Iminizip --library=zippler -X -fPIC --pkg minizip --vapidir=vapi --symbols=zippler.sym --vapi=zippler-1.0.vapi -H zippler.h -X -w -X -O2 -c -g
 	
 libzippler.a: $(ZIPPLER_FILES) $(MINIZIP_C) $(MINIZIP_H) vapi/minizip.vapi zippler.sym
 	ar rcs libzippler.a $(OBJECTS)

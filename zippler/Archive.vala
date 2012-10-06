@@ -421,6 +421,13 @@ public class Zippler.Archive : Object
 		if (entry_hash.lookup(path) != null)
 			return null;
 
+		// Check for file/dir name collision
+		string other_path =
+			path.has_suffix("/") ? path[0:path.length-1]
+			                     : path + "/";
+		if (entry_hash.lookup(other_path) != null)
+			return null;
+
 		Entry parent;
 		string name;
 		EntryType type;

@@ -269,7 +269,7 @@ public class Zippler.Archive : Object
 			{
 				parent =
 					new Entry.create_placeholder
-						(Path.get_basename(_parent_path)+"/", _parent_path+"/");
+						(Path.get_basename(_parent_path)+"/", _parent_path);
 
 				Entry super_parent;
 				get_entry_info(_parent_path, out super_parent, null, null);

@@ -70,7 +70,7 @@ public class Zippler.Entry
 	public ulong internal_fa;
 	public ulong external_fa;
 
-	public GLib.DateTime date_time;
+	public GLib.DateTime date_time { get; set; }
 
 	private List<Entry> children;
 	public uint children_count { get; private set; default = 0; }

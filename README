@@ -13,10 +13,10 @@ and files, much like a filesystem.
 Example: list all files/folders in
 the root directory of a zip-file:
 
-	var zip = new Zippler.File();
+	var zip = new Zippler.Archive();
 	zip.load_file("myZipFile.zip");
 	
-	foreach(Zippler.Entry e in zip.root_entry.children)
+	foreach (Zippler.Entry e in zip.root_entry.get_children())
 		stdout.printf("%s\n", e.name);
 				
 

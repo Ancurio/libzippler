@@ -39,4 +39,4 @@ ZipplerView: examples/ZipplerView.vala libzippler.so
 	valac examples/ZipplerView.vala --pkg zippler-1.0 --pkg gtk+-3.0 --vapidir=. -X -I. -X -L. -X -lzippler -X -w
 	
 clean:
-	rm -rf $(OBJECTS) libzippler.so libzippler.a zippler-1.0.gir zippler-1.0.vapi zippler.h zippler.sym
+	rm -rf $(OBJECTS) libzippler.so libzippler.a zippler-1.0.vapi zippler.h zippler.sym

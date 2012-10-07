@@ -229,8 +229,10 @@ public class Zippler.Archive : Object
 		entry_hash.insert(path, entry);
 	}
 
+	// Parent will be set to null if this function
+	// fails due to name collision
 	private void get_entry_info(string path,
-	                            out Entry parent,
+	                            out Entry? parent,
 	                            out string name,
 	                            out EntryType type)
 	{
@@ -261,6 +263,12 @@ public class Zippler.Archive : Object
 		}
 		else
 		{
+			if (entry_hash.lookup(parent_path) != null)
+			{
+				parent = null;
+				return;
+			}
+
 			string _parent_path = parent_path + "/";
 
 			parent = entry_hash.lookup(_parent_path);
@@ -273,6 +281,13 @@ public class Zippler.Archive : Object
 
 				Entry super_parent;
 				get_entry_info(_parent_path, out super_parent, null, null);
+
+				// Check if failed due to name collision
+				if (super_parent == null)
+				{
+					parent = null;
+					return;
+				}
 
 				super_parent.append_child(parent);
 				parent.parent = super_parent;
@@ -433,6 +448,10 @@ public class Zippler.Archive : Object
 		EntryType type;
 
 		get_entry_info(path, out parent, out name, out type);
+
+		// Check for name collision during parent chain creation
+		if (parent == null)
+			return null;
 
 		var entry = new Entry.empty(name, path, type);
 		setup_entry(entry, parent, path);

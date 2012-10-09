@@ -36,13 +36,13 @@ libzippler.a: linker_script $(MINIZIP_O) vapi/minizip.vapi zippler.sym
 	ar rcs libzippler.a $(OBJECTS)
 	
 ioapi.o: minizip/ioapi.c minizip/ioapi.h
-	cc -c minizip/ioapi.c -O2
+	cc -c minizip/ioapi.c -O2 -fPIC
 
 unzip.o: minizip/unzip.c minizip/unzip.h
-	cc -c minizip/unzip.c -O2
+	cc -c minizip/unzip.c -O2 -fPIC
 
 zip.o: minizip/zip.c minizip/zip.h
-	cc -c minizip/zip.c -O2
+	cc -c minizip/zip.c -O2 -fPIC
 
 ZipplerView: examples/ZipplerView.vala libzippler.so
 	valac examples/ZipplerView.vala --pkg zippler-1.0 --pkg gtk+-3.0 --vapidir=. -X -I. -X -L. -X -lzippler -X -w

@@ -1,3 +1,7 @@
+# $1: library filename (so-name)
+# $2: .sym symbol file
+# $3: linker script output file
+
 if [ $# -lt 3 ]
 then
 	echo "Too few arguments"
